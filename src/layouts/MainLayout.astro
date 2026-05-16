@@ -1,0 +1,73 @@
+---
+import '../styles/global.css';
+import { languages, siteContent, type Lang } from '../data/content';
+
+interface Props {
+  lang: Lang;
+  title?: string;
+  description?: string;
+}
+
+const { lang, title, description } = Astro.props;
+const ui = siteContent[lang];
+const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://www.mcb-engineering.com');
+---
+<!doctype html>
+<html lang={lang} dir={ui.direction}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title ? `${title} — ${ui.siteTitle}` : ui.siteTitle}</title>
+    <meta name="description" content={description ?? ui.metaDescription} />
+    <link rel="icon" type="image/png" href="/images/logo-mcb.png" />
+    <link rel="canonical" href={canonical.href} />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="shell header-inner">
+        <a href={`/${lang}/`} class="brand" aria-label={ui.siteTitle}>
+          <img src="/images/logo-mcb.png" alt="MCB" />
+          <div>
+            <span class="brand-name">{ui.siteTitle}</span>
+            <span class="brand-tag">{ui.tagline}</span>
+          </div>
+        </a>
+        <nav class="main-nav" aria-label="Primary navigation">
+          <a href={`/${lang}/#studio`}>{ui.nav.studio}</a>
+          <a href={`/${lang}/#projects`}>{ui.nav.projects}</a>
+          <a href={`/${lang}/#chronology`}>{ui.nav.chronology}</a>
+          <a href={`/${lang}/#journal`}>{ui.nav.journal}</a>
+          <a href={`/${lang}/#contact`}>{ui.nav.contact}</a>
+        </nav>
+        <div class="lang-switcher" aria-label="Language switcher">
+          {languages.map((code) => (
+            <a href={`/${code}/`} class={code === lang ? 'is-active' : ''}>
+              {siteContent[code].localeName}
+            </a>
+          ))}
+        </div>
+      </div>
+    </header>
+    <main>
+      <slot />
+    </main>
+    <footer class="site-footer" id="contact">
+      <div class="shell footer-grid">
+        <div>
+          <p class="footer-title">{ui.siteTitle}</p>
+          <p>{ui.footer.address}</p>
+        </div>
+        <div>
+          <p><a href={`mailto:${ui.footer.email}`}>{ui.footer.email}</a></p>
+          <p><a href={`tel:${ui.footer.phone.replaceAll(' ', '')}`}>{ui.footer.phone}</a></p>
+          <p><a href={`tel:${ui.footer.phone2.replaceAll(' ', '')}`}>{ui.footer.phone2}</a></p>
+          <p><a href={`https://wa.me/${ui.footer.whatsapp.replaceAll('+', '').replaceAll(' ', '')}`}>WhatsApp — {ui.footer.whatsapp}</a></p>
+        </div>
+        <div class="footer-note">
+          <p>MCB — depuis 1996</p>
+          <p>Architecture · Urbanisme · Project Management</p>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

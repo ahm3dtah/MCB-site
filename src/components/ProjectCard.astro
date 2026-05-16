@@ -1,0 +1,32 @@
+---
+import type { Lang } from '../data/content';
+interface Project {
+  slug: string;
+  image: string;
+  year: string;
+  type: Record<string, string>;
+  location: Record<string, string>;
+  title: Record<string, string>;
+  excerpt: Record<string, string>;
+}
+interface Props {
+  project: Project;
+  lang: Lang;
+  label: string;
+}
+const { project, lang, label } = Astro.props;
+---
+<article class="project-card">
+  <a href={`/${lang}/projects/${project.slug}/`}>
+    <div class="project-card-media">
+      <img src={project.image} alt={project.title[lang]} loading="lazy" />
+    </div>
+    <div class="project-card-body">
+      <p class="project-meta">{project.type[lang]} · {project.location[lang]}</p>
+      <h3>{project.title[lang]}</h3>
+      <p class="project-card-excerpt">{project.excerpt[lang]}</p>
+      <span class="project-year">{project.year}</span>
+      <span class="text-link">{label}</span>
+    </div>
+  </a>
+</article>

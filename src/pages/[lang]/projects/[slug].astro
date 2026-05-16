@@ -1,0 +1,69 @@
+---
+import MainLayout from '../../../layouts/MainLayout.astro';
+import { isLang, languages, projects, siteContent } from '../../../data/content';
+
+export function getStaticPaths() {
+  return languages.flatMap((lang) =>
+    projects.map((project) => ({ params: { lang, slug: project.slug } }))
+  );
+}
+
+const langParam = Astro.params.lang ?? 'fr';
+const slug = Astro.params.slug ?? '';
+if (!isLang(langParam)) {
+  throw new Error(`Unsupported language: ${langParam}`);
+}
+const lang = langParam;
+const ui = siteContent[lang];
+const project = projects.find((item) => item.slug === slug);
+if (!project) {
+  throw new Error(`Project not found: ${slug}`);
+}
+const facts = project.facts[lang];
+---
+<MainLayout lang={lang} title={project.title[lang]} description={project.excerpt[lang]}>
+  <section class="shell detail-hero section-space-sm">
+    <a href={`/${lang}/#projects`} class="back-link">← {ui.ctas.backToProjects}</a>
+    <div class="detail-hero-grid">
+      <div>
+        <p class="eyebrow">{project.type[lang]}</p>
+        <h1 class="detail-title">{project.title[lang]}</h1>
+        <p class="detail-intro">{project.excerpt[lang]}</p>
+      </div>
+      <div class="detail-facts card-panel">
+        <div>
+          <span class="fact-label">{lang === 'fr' ? 'Lieu' : lang === 'en' ? 'Location' : 'الموقع'}</span>
+          <p>{project.location[lang]}</p>
+        </div>
+        <div>
+          <span class="fact-label">{lang === 'fr' ? 'Achèvement' : lang === 'en' ? 'Completion' : 'الإنجاز'}</span>
+          <p>{facts.completion}</p>
+        </div>
+        <div>
+          <span class="fact-label">{lang === 'fr' ? 'Mission' : lang === 'en' ? 'Mission' : 'المهمة'}</span>
+          <p>{facts.mission}</p>
+        </div>
+        <div>
+          <span class="fact-label">{lang === 'fr' ? 'Maître d’ouvrage / Client' : lang === 'en' ? 'Client' : 'صاحب المشروع / العميل'}</span>
+          <p>{facts.client}</p>
+        </div>
+        <div>
+          <span class="fact-label">{lang === 'fr' ? 'Partenaires' : lang === 'en' ? 'Partners' : 'الشركاء'}</span>
+          <p>{facts.partners}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="shell detail-image-wrap">
+    <img class="detail-image" src={project.image} alt={project.title[lang]} />
+  </section>
+
+  <section class="shell detail-body section-space-sm">
+    <div class="rich-text detail-text">
+      {project.details[lang].map((paragraph) => (
+        <p>{paragraph}</p>
+      ))}
+    </div>
+  </section>
+</MainLayout>

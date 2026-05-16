@@ -1,0 +1,92 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { chronology, isLang, journal, languages, projects, siteContent } from '../../data/content';
+
+export function getStaticPaths() {
+  return languages.map((lang) => ({ params: { lang } }));
+}
+
+const langParam = Astro.params.lang ?? 'fr';
+if (!isLang(langParam)) {
+  throw new Error(`Unsupported language: ${langParam}`);
+}
+const lang = langParam;
+const ui = siteContent[lang];
+---
+<MainLayout lang={lang} title={ui.siteTitle} description={ui.metaDescription}>
+  <section class="hero shell section-space">
+    <div class="hero-copy">
+      <p class="eyebrow">{ui.hero.kicker}</p>
+      <p class="hero-subtitle">{ui.hero.subtitle}</p>
+      <h1>
+        {ui.hero.titleLines.map((line) => (
+          <span>{line}</span>
+        ))}
+      </h1>
+      <div class="hero-rule"></div>
+      <p class="hero-text">{ui.hero.paragraph}</p>
+      <div class="hero-actions">
+        <a href={`/${lang}/#studio`} class="button-link">{ui.ctas.discoverStudio}</a>
+        <a href={`/${lang}/#projects`} class="button-link secondary">{ui.ctas.viewProjects}</a>
+      </div>
+    </div>
+    <div class="hero-media">
+      <img src="/images/projects/universite-nouakchott.png" alt="MCB project illustration" />
+    </div>
+  </section>
+
+  <section id="studio" class="shell section-space studio-grid">
+    <div>
+      <SectionHeading eyebrow={ui.studio.eyebrow} title={ui.studio.introTitle} />
+      <div class="rich-text">
+        {ui.studio.paragraphs.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+      </div>
+    </div>
+    <aside class="founder-card">
+      <img src="/images/founder-menih-ould-tah.jpg" alt="Menih Ould Tah" />
+      <div class="founder-card-body">
+        <p class="eyebrow">{ui.studio.founderTitle}</p>
+        <p class="founder-quote">{ui.studio.founderQuote}</p>
+        <p class="founder-role">{ui.studio.founderRole}</p>
+      </div>
+    </aside>
+  </section>
+
+  <section id="projects" class="shell section-space">
+    <SectionHeading eyebrow={ui.sections.projectsEyebrow} title={ui.sections.projectsTitle} />
+    <div class="projects-grid">
+      {projects.map((project) => (
+        <ProjectCard project={project} lang={lang} label={ui.ctas.viewProjects} />
+      ))}
+    </div>
+  </section>
+
+  <section id="journal" class="shell section-space journal-layout">
+    <div>
+      <SectionHeading eyebrow={ui.sections.journalEyebrow} title={ui.sections.journalTitle} />
+    </div>
+    <div class="journal-grid">
+      {journal.map((article) => (
+        <ArticleCard article={article} lang={lang} label={ui.ctas.readArticle} />
+      ))}
+    </div>
+  </section>
+
+  <section id="chronology" class="shell section-space chronology-section">
+    <SectionHeading eyebrow={ui.sections.chronologyEyebrow} title={ui.sections.chronologyTitle} />
+    <div class="timeline">
+      {chronology.map((item) => (
+        <article class="timeline-item">
+          <span class="timeline-year">{item.year}</span>
+          <h3>{item.title[lang]}</h3>
+          <p>{item.text[lang]}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+</MainLayout>

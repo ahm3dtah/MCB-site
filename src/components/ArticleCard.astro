@@ -1,0 +1,26 @@
+---
+import type { Lang } from '../data/content';
+interface Article {
+  slug: string;
+  date: string;
+  dateEn: string;
+  dateAr: string;
+  title: Record<string, string>;
+  excerpt: Record<string, string>;
+}
+interface Props {
+  article: Article;
+  lang: Lang;
+  label: string;
+}
+const { article, lang, label } = Astro.props;
+const date = lang === 'fr' ? article.date : lang === 'en' ? article.dateEn : article.dateAr;
+---
+<article class="journal-card">
+  <a href={`/${lang}/journal/${article.slug}/`}>
+    <p class="journal-date">{date}</p>
+    <h3>{article.title[lang]}</h3>
+    <p>{article.excerpt[lang]}</p>
+    <span class="text-link">{label}</span>
+  </a>
+</article>

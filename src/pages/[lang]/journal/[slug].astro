@@ -1,0 +1,39 @@
+---
+import MainLayout from '../../../layouts/MainLayout.astro';
+import { isLang, journal, languages, siteContent } from '../../../data/content';
+
+export function getStaticPaths() {
+  return languages.flatMap((lang) =>
+    journal.map((article) => ({ params: { lang, slug: article.slug } }))
+  );
+}
+
+const langParam = Astro.params.lang ?? 'fr';
+const slug = Astro.params.slug ?? '';
+if (!isLang(langParam)) {
+  throw new Error(`Unsupported language: ${langParam}`);
+}
+const lang = langParam;
+const ui = siteContent[lang];
+const article = journal.find((item) => item.slug === slug);
+if (!article) {
+  throw new Error(`Article not found: ${slug}`);
+}
+const date = lang === 'fr' ? article.date : lang === 'en' ? article.dateEn : article.dateAr;
+---
+<MainLayout lang={lang} title={article.title[lang]} description={article.excerpt[lang]}>
+  <section class="shell article-hero section-space-sm">
+    <a href={`/${lang}/#journal`} class="back-link">← {ui.ctas.backToJournal}</a>
+    <p class="journal-date">{date}</p>
+    <h1 class="detail-title article-title">{article.title[lang]}</h1>
+    <p class="detail-intro article-intro">{article.excerpt[lang]}</p>
+  </section>
+
+  <section class="shell article-body section-space-sm">
+    <div class="rich-text detail-text article-text">
+      {article.body[lang].map((paragraph) => (
+        <p>{paragraph}</p>
+      ))}
+    </div>
+  </section>
+</MainLayout>
